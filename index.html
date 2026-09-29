@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multiplikasjon med brøk</title>
+<meta name="description" content="Se multiplikasjon med brøk steg for steg: heltall ganger brøk og brøk ganger brøk.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%95%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1b2130; --muted:#5b6478; --line:#d5dbe8;
+  --blue:#3b82f6; --blue-d:#1d4ed8; --yel:#facc15; --yel-d:#a16207; --grn:#16a34a; --grn-d:#15803d;
+  --btn:#1d4ed8; --btn-ink:#ffffff; --seg:#e6ebf6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151d; --card:#1a1f2b; --ink:#eef1f8; --muted:#a0a9bd; --line:#2d3546;
+    --blue:#60a5fa; --blue-d:#8ab8fb; --yel:#fbbf24; --yel-d:#fcd34d; --grn:#4ade80; --grn-d:#86efac;
+    --btn:#3b82f6; --btn-ink:#0b1020; --seg:#252c3b;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151d; --card:#1a1f2b; --ink:#eef1f8; --muted:#a0a9bd; --line:#2d3546;
+  --blue:#60a5fa; --blue-d:#8ab8fb; --yel:#fbbf24; --yel-d:#fcd34d; --grn:#4ade80; --grn-d:#86efac;
+  --btn:#3b82f6; --btn-ink:#0b1020; --seg:#252c3b;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:500;line-height:1.4}
+main{max-width:860px;margin:0 auto;padding:18px 16px 40px}
+h1{font-size:1.5rem;font-weight:800;margin:0 0 14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center}
+.group{display:flex;flex-direction:column;gap:6px}
+.group > label{font-size:.85rem;color:var(--muted);font-weight:700}
+.seg{display:inline-flex;background:var(--seg);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-weight:700;padding:8px 14px;border-radius:8px;cursor:pointer}
+.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.expr{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:16px;font-size:1.6rem;font-weight:800}
+.dot{font-size:1.8rem;color:var(--muted)}
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin i{display:block;width:100%;height:3px;border-radius:2px;background:currentColor}
+.fin input,#n{width:4.2rem;text-align:center;font:inherit;font-size:1.3rem;font-weight:800;color:inherit;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:5px 2px}
+#fA{color:var(--blue-d)} #fB{color:var(--yel-d)} #n{color:var(--ink)}
+input[type=number]{-moz-appearance:textfield;appearance:textfield;line-height:1;padding:0 !important;height:3rem;text-align:center}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;display:none}
+.hint{font-size:.85rem;color:var(--muted);margin-top:8px}
+
+.stage{display:flex;flex-direction:column;align-items:center}
+svg{width:100%;max-width:560px;height:auto;display:block}
+.caption{line-height:1.7;min-height:3.4em;text-align:center;font-size:1.15rem;font-weight:700;max-width:640px;margin:6px auto 4px}
+.result{min-height:3.4rem;text-align:center;font-size:1.7rem;font-weight:800;margin:4px 0 10px;color:var(--grn-d)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .18em;line-height:1.15;font-size:.95em}
+.fr span:first-child{border-bottom:2.5px solid currentColor;padding:0 .3em}
+.fr span:last-child{padding:0 .3em}
+
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+.ctrl button{font:inherit;font-weight:800;border:2px solid var(--line);background:var(--card);color:var(--ink);padding:9px 16px;border-radius:10px;cursor:pointer}
+.ctrl button.primary{background:var(--btn);border-color:var(--btn);color:var(--btn-ink)}
+.ctrl button:disabled{opacity:.4;cursor:default}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.dots button{width:14px;height:14px;padding:0;border-radius:50%;border:2px solid var(--muted);background:transparent;cursor:pointer}
+.dots button.on{background:var(--blue);border-color:var(--blue)}
+
+/* Store skjermer: to kolonner, figuren får mest plass */
+.layout{display:block}
+@media (min-width:980px){
+  main{max-width:1560px;padding:20px 28px 28px}
+  h1{font-size:1.7rem;margin-bottom:16px}
+  .layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:18px;align-items:stretch}
+  .layout .panel{margin-bottom:0}
+  .stage{min-height:calc(100vh - 110px);justify-content:space-between}
+  #svgHost{flex:1;align-items:center}
+  svg{max-width:none;max-height:max(320px, calc(100vh - 340px))}
+  .caption{font-size:1.4rem;max-width:980px}
+  .result{font-size:2.2rem}
+  .ctrl button{font-size:1.05rem;padding:11px 24px}
+}
+@media (min-width:1500px){
+  .caption{font-size:1.6rem}
+  .result{font-size:2.5rem}
+}
+/* SVG-klasser */
+.o{fill:none;stroke:var(--ink);stroke-width:2.5}
+.g{stroke:var(--ink);stroke-width:1.3;fill:none}
+.gb{stroke:var(--ink);stroke-width:2;fill:none}
+.fb{fill:var(--blue);fill-opacity:.55}
+.fy{fill:var(--yel);fill-opacity:.6}
+.fg{fill:var(--grn);fill-opacity:.8}
+.ov{fill:none;stroke:var(--grn-d);stroke-width:4}
+.tb{fill:var(--blue-d);font-weight:800;font-size:22px}
+.ty{fill:var(--yel-d);font-weight:800;font-size:22px}
+.tg{fill:var(--grn-d);font-weight:800;font-size:20px}
+.tm{fill:var(--muted);font-weight:700;font-size:17px}
+@keyframes pop{from{opacity:0}to{opacity:1}}
+.pop{animation:pop .7s ease both}
+@keyframes sl{from{transform:translateX(var(--dx))}to{transform:none}}
+@keyframes fo{from{opacity:1}to{opacity:0}}
+.slide{animation:sl 1.3s ease both}
+.slide.fade{animation:sl 1.3s ease both, fo 1.3s ease .1s both}
+@media (prefers-reduced-motion: reduce){.pop,.slide{animation:none}.slide.fade{animation:none;opacity:0}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Multiplikasjon med brøk</h1>
+
+  <div class="layout">
+  <section class="panel">
+    <div class="row">
+      <div class="group">
+        <label>Hva vil du regne?</label>
+        <div class="seg" id="modeSeg">
+          <button data-v="whole">Heltall · brøk</button>
+          <button data-v="frac" class="on">Brøk · brøk</button>
+        </div>
+      </div>
+      <div class="group">
+        <label>Hvordan vil du se det?</label>
+        <div class="seg" id="viewSeg">
+          <button data-v="rect" class="on">Rektangel</button>
+          <button data-v="circle">Sirkel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="expr" aria-label="Regnestykket">
+      <span id="wholeBox" style="display:none"><input id="n" type="number" inputmode="numeric" min="1" max="12" value="3" aria-label="Heltall"></span>
+      <span class="dot" id="dotA" style="display:none">·</span>
+      <div class="fin" id="fA">
+        <input id="a1" type="number" inputmode="numeric" min="0" max="12" value="2" aria-label="Teller">
+        <i></i>
+        <input id="b1" type="number" inputmode="numeric" min="1" max="12" value="3" aria-label="Nevner">
+      </div>
+      <span class="dot" id="dotB">·</span>
+      <div class="fin" id="fB">
+        <input id="a2" type="number" inputmode="numeric" min="0" max="12" value="3" aria-label="Teller 2">
+        <i></i>
+        <input id="b2" type="number" inputmode="numeric" min="1" max="12" value="4" aria-label="Nevner 2">
+      </div>
+    </div>
+    <div class="hint" id="hint">Nevner fra 1 til 12. Telleren kan ikke være større enn nevneren.</div>
+    <div class="hint">Tastatur: ← og → for å bla, mellomrom for å spille av.</div>
+  </section>
+
+  <section class="panel stage">
+    <div id="svgHost" style="width:100%;display:flex;justify-content:center"></div>
+    <div class="caption" id="caption" aria-live="polite"></div>
+    <div class="result" id="result"></div>
+    <div class="ctrl">
+      <button id="prev">Forrige</button>
+      <button id="play" class="primary">Spill av</button>
+      <button id="next">Neste</button>
+      <button id="reset">Start på nytt</button>
+      <button id="fs" title="Fullskjerm (f.eks. på prosjektor)">Fullskjerm</button>
+    </div>
+    <div class="dots" id="dots"></div>
+  </section>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+let mode = 'frac', view = 'rect', step = 0, fwd = false, timer = null;
+
+const gcd = (a,b) => b ? gcd(b, a % b) : Math.abs(a);
+const fr = (n,d) => `<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const clamp = (v,lo,hi) => Math.min(hi, Math.max(lo, v));
+const num = (el, def) => { const v = parseInt(el.value, 10); return isNaN(v) ? def : v; };
+
+function read(){
+  const n  = clamp(num($('n'), 1), 1, 12);
+  const b1 = clamp(num($('b1'), 1), 1, 12);
+  const a1 = clamp(num($('a1'), 0), 0, b1);
+  const b2 = clamp(num($('b2'), 1), 1, 12);
+  const a2 = clamp(num($('a2'), 0), 0, b2);
+  $('a1').max = b1; $('a2').max = b2;
+  return {n,a1,b1,a2,b2};
+}
+const maxStep = () => mode === 'whole' ? 3 : 4;
+
+/* ---- hjelpere for animasjon ---- */
+const cl = (s, base) => `class="${base}${(fwd && step === s) ? ' pop' : ''}"`;
+const A  = (s, i = 0, base = 0) => (fwd && step === s) ? `style="animation-delay:${(base + i*0.09).toFixed(2)}s"` : '';
+
+/* ---- brøk med brøkstrek i SVG ---- */
+function fracSvg(x, y, n, d, color, extra = '', fs = 24){
+  const w = Math.max(String(n).length, String(d).length) * fs * 0.6 + 14;
+  const t = `text-anchor:middle;font-weight:800;font-size:${fs}px;fill:${color}`;
+  return `<g ${extra}><text x="${x}" y="${y-7}" style="${t}">${n}</text><line x1="${x-w/2}" y1="${y}" x2="${x+w/2}" y2="${y}" style="stroke:${color};stroke-width:2.5"/><text x="${x}" y="${y+fs-2}" style="${t}">${d}</text></g>`;
+}
+
+/* ---- geometri ---- */
+const pt = (cx,cy,r,t) => [cx + r*Math.sin(t), cy - r*Math.cos(t)];
+function sector(cls, extra, cx, cy, r, t0, t1){
+  const span = t1 - t0;
+  if (span <= 1e-9) return '';
+  if (span >= 2*Math.PI - 1e-6) return `<circle ${cls} ${extra} cx="${cx}" cy="${cy}" r="${r}"/>`;
+  const [x0,y0] = pt(cx,cy,r,t0), [x1,y1] = pt(cx,cy,r,t1);
+  const large = span > Math.PI ? 1 : 0;
+  return `<path ${cls} ${extra} d="M${cx} ${cy} L${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z"/>`;
+}
+function radial(cls, extra, cx, cy, r, t){
+  const [x,y] = pt(cx,cy,r,t);
+  return `<line ${cls} ${extra} x1="${cx}" y1="${cy}" x2="${x.toFixed(2)}" y2="${y.toFixed(2)}"/>`;
+}
+
+/* ---- brøk · brøk: to hele som glir over i hverandre ---- */
+const slideWrap = (inner, dx, fade) =>
+  (fwd && step === 2) ? `<g class="slide${fade ? ' fade' : ''}" style="--dx:${dx}px">${inner}</g>` : inner;
+
+function drawRectFF(p){
+  const {a1,b1,a2,b2} = p, Z = 220, Y = 20;
+  const xA = 30, xB = 290, xM = 160, dx = 130;
+  const cw = Z*a1/b1, rh = Z*a2/b2;
+  const partA = x0 => {
+    let o = '';
+    if (step >= 1) o += `<rect ${cl(1,'fb')} ${A(1)} x="${x0}" y="${Y}" width="${cw}" height="${Z}"/>`;
+    if (step >= 1) for (let i = 1; i < b1; i++){
+      const x = x0 + Z*i/b1;
+      o += `<line ${cl(1,'g')} ${A(1,i)} x1="${x}" y1="${Y}" x2="${x}" y2="${Y+Z}"/>`;
+    }
+    return o + `<rect class="o" x="${x0}" y="${Y}" width="${Z}" height="${Z}"/>`;
+  };
+  const partB = x0 => {
+    let o = '';
+    if (step >= 1) o += `<rect ${cl(1,'fy')} ${A(1)} x="${x0}" y="${Y}" width="${Z}" height="${rh}"/>`;
+    if (step >= 1) for (let j = 1; j < b2; j++){
+      const y = Y + Z*j/b2;
+      o += `<line ${cl(1,'g')} ${A(1,j)} x1="${x0}" y1="${y}" x2="${x0+Z}" y2="${y}"/>`;
+    }
+    return o + `<rect class="o" x="${x0}" y="${Y}" width="${Z}" height="${Z}"/>`;
+  };
+  let s = '';
+  const ty = Y + Z + 40;
+  if (step < 2){
+    s += partA(xA) + partB(xB);
+    s += `<text x="270" y="${Y+Z/2+14}" text-anchor="middle" style="font-size:44px;font-weight:800;fill:var(--muted)">·</text>`;
+    if (step >= 1){
+      s += fracSvg(xA+Z/2, ty, a1, b1, 'var(--blue-d)', `${cl(1,'')} ${A(1)}`);
+      s += fracSvg(xB+Z/2, ty, a2, b2, 'var(--yel-d)', `${cl(1,'')} ${A(1)}`);
+    }
+  } else {
+    s += slideWrap(partA(xM), -dx, false) + slideWrap(partB(xM), dx, false);
+    if (step >= 3 && cw > 0 && rh > 0){
+      s += `<rect ${cl(3,'fg')} ${A(3)} x="${xM}" y="${Y}" width="${cw}" height="${rh}"/>`;
+      s += `<rect ${cl(3,'ov')} ${A(3)} x="${xM}" y="${Y}" width="${cw}" height="${rh}"/>`;
+    }
+    s += `<rect class="o" x="${xM}" y="${Y}" width="${Z}" height="${Z}"/>`;
+    if (step === 2) s += fracSvg(215, ty, a1, b1, 'var(--blue-d)') + `<text x="270" y="${ty+8}" text-anchor="middle" style="font-size:34px;font-weight:800;fill:var(--muted)">·</text>` + fracSvg(325, ty, a2, b2, 'var(--yel-d)');
+    else s += `<text ${cl(3,'tg')} ${A(3)} x="270" y="${ty+6}" text-anchor="middle">${a1*a2} av ${b1*b2} små ruter er grønne</text>`;
+  }
+  return {svg:s, w:540, h:Y+Z+76};
+}
+
+function drawCircleFF(p){
+  const {a1,b1,a2,b2} = p, R = 110, cy = 125, xA = 130, xB = 410, xM = 270, dx = 140;
+  const N = b1*b2, tw = 2*Math.PI/N, tb = 2*Math.PI/b1, tb2 = 2*Math.PI/b2;
+  const partA = cx => {
+    let o = '';
+    if (step >= 1) o += sector(cl(1,'fb'), A(1), cx, cy, R, 0, a1*tb);
+    if (step >= 2) for (let i = 0; i < a1; i++) o += sector(cl(2,'fy'), A(2,i,.7), cx, cy, R, i*tb, i*tb + a2*tw);
+    if (step >= 3) for (let i = 0; i < a1; i++) o += sector(cl(3,'fg'), A(3,i), cx, cy, R, i*tb, i*tb + a2*tw);
+    if (step >= 1) for (let k = 0; k < b1; k++) o += radial(cl(1,'gb'), A(1,k), cx, cy, R, k*tb);
+    if (step >= 2) for (let j = 0; j < N; j++) if (j % b2 !== 0) o += radial(cl(2,'g'), A(2,j,.7), cx, cy, R, j*tw);
+    return o + `<circle class="o" cx="${cx}" cy="${cy}" r="${R}"/>`;
+  };
+  const partB = cx => {
+    let o = '';
+    if (step >= 1) o += sector(cl(1,'fy'), A(1), cx, cy, R, 0, a2*tb2);
+    if (step >= 1) for (let k = 0; k < b2; k++) o += radial(cl(1,'gb'), A(1,k), cx, cy, R, k*tb2);
+    return o + `<circle class="o" cx="${cx}" cy="${cy}" r="${R}"/>`;
+  };
+  let s = '';
+  const ty = cy + R + 34;
+  if (step < 2){
+    s += partA(xA) + partB(xB);
+    s += `<text x="270" y="${cy+14}" text-anchor="middle" style="font-size:44px;font-weight:800;fill:var(--muted)">·</text>`;
+    if (step >= 1){
+      s += fracSvg(xA, ty, a1, b1, 'var(--blue-d)', `${cl(1,'')} ${A(1)}`);
+      s += fracSvg(xB, ty, a2, b2, 'var(--yel-d)', `${cl(1,'')} ${A(1)}`);
+    }
+  } else {
+    s += slideWrap(partA(xM), -dx, false);
+    if (fwd && step === 2) s += slideWrap(partB(xM), dx, true);
+    if (step === 2) s += fracSvg(150, ty, a2, b2, 'var(--yel-d)', `${cl(2,'')} ${A(2,0,.7)}`) + `<text ${cl(2,'ty')} ${A(2,0,.7)} x="182" y="${ty+6}">av hver blå del er gul</text>`;
+    else s += `<text ${cl(3,'tg')} ${A(3)} x="270" y="${ty+6}" text-anchor="middle">${a1*a2} av ${N} små biter er grønne</text>`;
+  }
+  return {svg:s, w:540, h:ty+40};
+}
+
+/* ---- heltall · brøk ---- */
+function unitShape(kind, x, y, b, filled, divided, s, i, cls){
+  let o = '';
+  if (kind === 'bar'){
+    const uw = 210, uh = 38;
+    if (filled > 0) o += `<rect ${cl(s,cls)} ${A(s,i)} x="${x}" y="${y}" width="${uw*filled/b}" height="${uh}"/>`;
+    if (divided) for (let k = 1; k < b; k++){
+      const xx = x + uw*k/b;
+      o += `<line ${cl(s,'g')} ${A(s,i)} x1="${xx}" y1="${y}" x2="${xx}" y2="${y+uh}"/>`;
+    }
+    o += `<rect class="o" x="${x}" y="${y}" width="${uw}" height="${uh}"/>`;
+  } else {
+    const r = 40, cx = x + r, cy = y + r, t = 2*Math.PI/b;
+    if (filled > 0) o += sector(cl(s,cls), A(s,i), cx, cy, r, 0, filled*t);
+    if (divided && b > 1) for (let k = 0; k < b; k++) o += radial(cl(s,'g'), A(s,i), cx, cy, r, k*t);
+    o += `<circle class="o" cx="${cx}" cy="${cy}" r="${r}"/>`;
+  }
+  return o;
+}
+function drawWhole(p){
+  const {n,a1:a,b1:b} = p, kind = view === 'rect' ? 'bar' : 'circle';
+  const perRow = kind === 'bar' ? 2 : 5, rowH = kind === 'bar' ? 54 : 96;
+  const pos = i => {
+    const c = i % perRow, r = Math.floor(i / perRow);
+    return kind === 'bar' ? [35 + c*240, r*rowH] : [20 + c*96, r*rowH];
+  };
+  const rows1 = Math.ceil(n / perRow), y0 = 10;
+  let s = '';
+  for (let i = 0; i < n; i++){
+    const [x,yy] = pos(i);
+    s += step === 0
+      ? unitShape(kind, x, y0+yy, b, 0, false, 0, i, 'fb')
+      : unitShape(kind, x, y0+yy, b, a, true, 1, i, 'fb');
+  }
+  const N = n*a, u2 = Math.max(1, Math.ceil(N / b));
+  const rows2 = Math.ceil(u2 / perRow);
+  const y2 = y0 + rows1*rowH + 44;
+  if (step >= 2){
+    s += `<text ${cl(2,'tm')} ${A(2)} x="260" y="${y2-14}" text-anchor="middle">Alle de fargede bitene samlet</text>`;
+    for (let j = 0; j < u2; j++){
+      const [x,yy] = pos(j);
+      const f = clamp(N - j*b, 0, b);
+      s += unitShape(kind, x, y2+yy, b, f, true, 2, j, 'fg');
+    }
+  }
+  return {svg:s, w:520, h:y2 + rows2*rowH + 6};
+}
+
+/* ---- tekster ---- */
+function captions(p){
+  const {n,a1,b1,a2,b2} = p;
+  if (mode === 'whole'){
+    const N = n*a1;
+    return [
+      `Vi starter med ${n} ${n === 1 ? 'hel' : 'hele'}.`,
+      `Del hver hel i ${b1} like deler, og ta ${a1} av delene. Det gjør vi ${n} ganger.`,
+      `Samler vi alle de fargede bitene, har vi ${n} · ${a1} = ${N} biter, og hver bit er ${fr(1,b1)}.`,
+      `${N} biter på ${fr(1,b1)} er ${fr(N,b1)}. Heltallet ganges med telleren, og nevneren beholdes.`
+    ];
+  }
+  if (view === 'rect') return [
+    `Vi tegner én hel for hver brøk.`,
+    `Den første deles i ${b1} deler på tvers, og ${a1} farges: ${fr(a1,b1)}. Den andre deles i ${b2} deler på langs, og ${a2} farges: ${fr(a2,b2)}.`,
+    `Vi legger de to over hverandre. Der fargene overlapper, tar vi ${fr(a2,b2)} av ${fr(a1,b1)}.`,
+    `Det grønne området er ${a1} · ${a2} = ${a1*a2} av ${b1} · ${b2} = ${b1*b2} like små ruter.`,
+    `Teller ganger teller, nevner ganger nevner.`
+  ];
+  return [
+    `Vi tegner én hel sirkel for hver brøk.`,
+    `Den første deles i ${b1} deler, og ${a1} farges blå: ${fr(a1,b1)}. Den andre deles i ${b2} deler, og ${a2} farges gule: ${fr(a2,b2)}.`,
+    `Den gule sirkelen smelter inn i den blå: hver blå del deles i ${b2} biter, og vi tar ${a2} av dem.`,
+    `De grønne bitene er ${a1} · ${a2} = ${a1*a2} av ${b1} · ${b2} = ${b1*b2} like små biter.`,
+    `Teller ganger teller, nevner ganger nevner.`
+  ];
+}
+function resultHTML(p){
+  let top, bot;
+  let lhs;
+  if (mode === 'whole'){ top = p.n*p.a1; bot = p.b1; lhs = `${p.n} · ${fr(p.a1,p.b1)}`; }
+  else { top = p.a1*p.a2; bot = p.b1*p.b2; lhs = `${fr(p.a1,p.b1)} · ${fr(p.a2,p.b2)}`; }
+  let out = `${lhs} = `;
+  if (top === 0) return out + '0';
+  const g = gcd(top, bot), sn = top/g, sd = bot/g;
+  const parts = [fr(top, bot)];
+  if (g > 1 && sd > 1) parts.push(fr(sn, sd));
+  if (sd === 1) parts.push(`${sn}`);
+  else if (sn > sd) parts.push(`${Math.floor(sn/sd)} ${fr(sn % sd, sd)}`);
+  return out + parts.join(' = ');
+}
+
+/* ---- tegn alt ---- */
+function render(){
+  const p = read();
+  let d;
+  if (mode === 'whole') d = drawWhole(p);
+  else d = view === 'rect' ? drawRectFF(p) : drawCircleFF(p);
+  $('svgHost').innerHTML = `<svg viewBox="0 0 ${d.w} ${d.h}" role="img" aria-label="Visualisering av regnestykket">${d.svg}</svg>`;
+  $('caption').innerHTML = captions(p)[step];
+  $('result').innerHTML = step === maxStep() ? resultHTML(p) : '';
+  $('prev').disabled = step === 0;
+  $('next').disabled = step === maxStep();
+  $('play').textContent = timer ? 'Pause' : 'Spill av';
+  const dots = $('dots'); dots.innerHTML = '';
+  for (let i = 0; i <= maxStep(); i++){
+    const b = document.createElement('button');
+    b.className = i === step ? 'on' : '';
+    b.setAttribute('aria-label', `Steg ${i+1}`);
+    b.onclick = () => { stop(); setStep(i, i > step); };
+    dots.appendChild(b);
+  }
+}
+function setStep(s, forward){ step = clamp(s, 0, maxStep()); fwd = forward; render(); }
+function stop(){ if (timer){ clearInterval(timer); timer = null; } }
+function restart(){ stop(); step = 0; fwd = false; render(); }
+
+/* ---- kontroller ---- */
+$('next').onclick = () => { stop(); setStep(step+1, true); };
+$('prev').onclick = () => { stop(); setStep(step-1, false); };
+$('reset').onclick = restart;
+$('play').onclick = () => {
+  if (timer){ stop(); render(); return; }
+  if (step >= maxStep()){ step = 0; fwd = false; }
+  setStep(step+1, true);
+  timer = setInterval(() => {
+    if (step < maxStep()) setStep(step+1, true); else { stop(); render(); }
+  }, 2600);
+  render();
+};
+document.querySelectorAll('#modeSeg button').forEach(b => b.onclick = () => {
+  mode = b.dataset.v;
+  document.querySelectorAll('#modeSeg button').forEach(x => x.classList.toggle('on', x === b));
+  const w = mode === 'whole';
+  $('wholeBox').style.display = w ? '' : 'none';
+  $('dotA').style.display = w ? '' : 'none';
+  $('dotB').style.display = w ? 'none' : '';
+  $('fB').style.display = w ? 'none' : '';
+  $('viewSeg').children[0].textContent = w ? 'Stolper' : 'Rektangel';
+  restart();
+});
+document.querySelectorAll('#viewSeg button').forEach(b => b.onclick = () => {
+  view = b.dataset.v;
+  document.querySelectorAll('#viewSeg button').forEach(x => x.classList.toggle('on', x === b));
+  fwd = false; render();
+});
+['n','a1','b1','a2','b2'].forEach(id => {
+  $(id).addEventListener('input', restart);
+  $(id).addEventListener('change', () => {
+    const p = read();
+    $('n').value = p.n; $('a1').value = p.a1; $('b1').value = p.b1; $('a2').value = p.a2; $('b2').value = p.b2;
+    restart();
+  });
+  $(id).addEventListener('focus', e => e.target.select());
+});
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'ArrowRight'){ e.preventDefault(); $('next').click(); }
+  else if (e.key === 'ArrowLeft'){ e.preventDefault(); $('prev').click(); }
+  else if (e.code === 'Space' && e.target.tagName !== 'BUTTON'){ e.preventDefault(); $('play').click(); }
+});
+if (document.documentElement.requestFullscreen){
+  $('fs').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+} else { $('fs').style.display = 'none'; }
+render();
+</script>
+</body>
+</html>
